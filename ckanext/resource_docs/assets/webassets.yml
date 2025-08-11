@@ -1,0 +1,14 @@
+# resource_docs-js:
+#   filter: rjsmin
+#   output: ckanext-resource_docs/%(version)s-resource_docs.js
+#   contents:
+#     - js/resource_docs.js
+#   extra:
+#     preload:
+#       - base/main
+
+# resource_docs-css:
+#   filter: cssrewrite
+#   output: ckanext-resource_docs/%(version)s-resource_docs.css
+#   contents:
+#     - css/resource_docs.css

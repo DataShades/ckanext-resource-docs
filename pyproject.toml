@@ -1,0 +1,38 @@
+[project]
+name = "ckanext-resource-docs"
+version = "0.0.1"
+description = "A CKAN extension that lets you attach a flexible, schema-free data dictionary (“resource documentation”) to any resource, not just Datastore-backed ones."
+readme = "README.md"
+authors = [
+    {name = "Oleksandr Cherniavskiy", email = "mutantsan@gmail.com"}
+]
+license = {text = "AGPL"}
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "License :: OSI Approved :: GNU Affero General Public License v3 or later (AGPLv3+)",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+]
+
+keywords = [ "CKAN", ]
+dependencies = []
+
+[project.urls]
+Homepage = "https://github.com/DataShades/ckanext-resource-docs"
+
+[project.entry-points."ckan.plugins"]
+resource_docs = "ckanext.resource_docs.plugin:ResourceDocsPlugin"
+
+
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+
+[tool.pytest.ini_options]
+filterwarnings = [
+        "ignore::sqlalchemy.exc.SADeprecationWarning",
+        "ignore::sqlalchemy.exc.SAWarning",
+        "ignore::DeprecationWarning",
+]
+addopts = "--ckan-ini test.ini"
