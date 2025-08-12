@@ -1,10 +1,15 @@
 [![Tests](https://github.com/DataShades/ckanext-resource-docs/actions/workflows/test.yml/badge.svg)](https://github.com/DataShades/ckanext-resource-docs/actions/workflows/test.yml)
 
-# ckanext-resource-docs
-
 A CKAN extension that lets you attach a flexible, schema-free data dictionary (*resource documentation*) to any resource, not just Datastore-backed ones. It supports custom fields via extensions, reuses CKAN’s existing data dictionary UI, and displays documentation directly on resource pages. Future versions will optionally allow attaching and validating against a defined schema for a resource.
 
 > **⚠️ Warning**: This extension is currently in active development. Features and APIs may change without notice.
+
+- [Requirements](#requirements)
+- [Installation](#installation)
+- [Config settings](#config-settings)
+- [Developer installation](#developer-installation)
+- [Tests](#tests)
+- [License](#license)
 
 ## Requirements
 

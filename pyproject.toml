@@ -37,10 +37,9 @@ addopts = "--ckan-ini test.ini"
 
 [tool.ruff]
 target-version = "py311"
+exclude = ["**/migration"]
 line-length = 120
-
-[tool.ruff.lint]
-select = [
+lint.select = [
     "ANN0", # type annotations for function arguments
     "B",    # likely bugs and design problems
     "BLE",  # do not catch blind exception
@@ -72,22 +71,24 @@ select = [
     "TRY",  # better exceptions
     "UP",   # upgrade syntax for newer versions of the language
 ]
-ignore = [
-    "D100", # do not require docstring for public modules
-    "D104", # do not require docstring for public packages
+lint.ignore = [
+    "D100",   # do not require docstring for public modules
+    "D104",   # do not require docstring for public packages
+    "D107",
     "RET503", # don't enforce return-None
-    "E712", # comparison to bool: violated by SQLAlchemy filters
-    "PT004", # fixture does not return anything, add leading underscore: violated by clean_db
+    "E712",   # comparison to bool: violated by SQLAlchemy filters
+    # "PT004", # fixture does not return anything, add leading underscore: violated by clean_db
     "PLC1901", # simplify comparison to empty string: violated by SQLAlchemy filters
 ]
 
 [tool.ruff.lint.per-file-ignores]
 "ckanext/resource_docs/tests*" = ["S", "PL", "ANN"]
+"ckanext/resource_docs/logic/schema.py" = [
+    "PLR0913",
+] # schemas requires many arguments
 
-[tool.ruff.lint.flake8-import-conventions.aliases]
-"ckan.plugins" = "p"
-"ckan.plugins.toolkit" = "tk"
-sqlalchemy = "sa"
+[tool.ruff.lint.flake8-import-conventions]
+aliases = { "ckan.plugins" = "p", "ckan.plugins.toolkit" = "tk", "sqlalchemy" = "sa" }
 
 [tool.ruff.lint.pydocstyle]
 convention = "google"
@@ -112,17 +113,14 @@ self = ["ckanext.resource_docs"]
 [tool.pyright]
 pythonVersion = "3.11"
 include = ["ckanext"]
-exclude = [
-    "**/test*",
-    "**/migration",
-]
+exclude = ["**/test*", "**/migration", "ckan/tests"]
 strict = []
 
 strictParameterNoneValue = true
 
 # Check the meaning of rules here
 # https://github.com/microsoft/pyright/blob/main/docs/configuration.md
-reportFunctionMemberAccess = true # non-standard member accesses for functions
+reportFunctionMemberAccess = true          # non-standard member accesses for functions
 reportMissingImports = true
 reportMissingModuleSource = true
 reportMissingTypeStubs = false
@@ -138,7 +136,7 @@ reportOptionalCall = true
 reportOptionalIterable = true
 reportOptionalContextManager = true
 reportOptionalOperand = true
-reportTypedDictNotRequiredAccess = false # Context won't work with this rule
+reportTypedDictNotRequiredAccess = false   # Context won't work with this rule
 reportConstantRedefinition = true
 reportIncompatibleMethodOverride = true
 reportIncompatibleVariableOverride = true
@@ -158,7 +156,7 @@ reportUnnecessaryCast = true
 reportUnnecessaryComparison = true
 reportAssertAlwaysTrue = true
 reportSelfClsParameterName = true
-reportUnusedCallResult = false # allow function calls for side-effect only
+reportUnusedCallResult = false             # allow function calls for side-effect only
 useLibraryCodeForTypes = true
 reportGeneralTypeIssues = true
 reportPropertyTypeMismatch = true

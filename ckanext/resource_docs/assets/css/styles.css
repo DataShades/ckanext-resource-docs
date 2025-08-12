@@ -1,0 +1,11 @@
+.jsoneditor-menu {
+    background-color: #005d7a;
+}
+
+.jsoneditor-menu .jsoneditor-transform {
+    display: none;
+}
+
+#jsoneditor-schema .jsoneditor-sort {
+    display: none;
+}

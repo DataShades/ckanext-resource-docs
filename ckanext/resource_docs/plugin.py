@@ -6,9 +6,12 @@ A CKAN extension that lets you attach a flexible, schema-free data dictionary
 
 from ckan import plugins as p
 from ckan.common import CKANConfig
-from ckan.plugins import tk
+from ckan.plugins import toolkit as tk
 
 
+@tk.blanket.actions
+@tk.blanket.auth_functions
+@tk.blanket.blueprints
 class ResourceDocsPlugin(p.SingletonPlugin):
     """Extension entry point."""
 
