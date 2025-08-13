@@ -29,3 +29,13 @@ class ResourceFactory(factories.Resource):
     """Factory for creating resources."""
 
     package_id = factory.LazyFunction(lambda: DatasetFactory()["id"])  # type: ignore
+
+
+@register(_name="sysadmin")
+class SysadminFactory(factories.SysadminWithToken):
+    """Factory for creating a sysadmin user with a token."""
+
+
+@register(_name="user")
+class UserFactory(factories.UserWithToken):
+    """Factory for creating a regular user with a token."""

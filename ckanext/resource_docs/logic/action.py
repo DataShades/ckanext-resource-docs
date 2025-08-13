@@ -1,6 +1,7 @@
 from typing import Any
 
 from ckan import types
+from ckan.logic import validate
 from ckan.plugins import toolkit as tk
 
 from ckanext.resource_docs.logic import schema
@@ -8,7 +9,7 @@ from ckanext.resource_docs.model import ResourceDocs
 from ckanext.resource_docs.utils import validate_json_with_schema
 
 
-@tk.validate(schema.resource_docs_override)
+@validate(schema.resource_docs_override)
 def resource_docs_override(context: types.Context, data_dict: types.DataDict) -> types.DataDict:
     """Create or update resource documentation.
 
@@ -46,7 +47,7 @@ def resource_docs_override(context: types.Context, data_dict: types.DataDict) ->
     return resource_docs.dictize(context)
 
 
-@tk.validate(schema.resource_docs_delete)
+@validate(schema.resource_docs_delete)
 def resource_docs_delete(context: types.Context, data_dict: types.DataDict) -> types.DataDict:
     """Delete resource documentation.
 
@@ -69,7 +70,7 @@ def resource_docs_delete(context: types.Context, data_dict: types.DataDict) -> t
     raise tk.ObjectNotFound(f"Resource documentation for resource {resource_id} not found")
 
 
-@tk.validate(schema.resource_docs_show)
+@validate(schema.resource_docs_show)
 @tk.side_effect_free
 def resource_docs_show(context: types.Context, data_dict: types.DataDict) -> types.DataDict:
     """Show resource documentation.
