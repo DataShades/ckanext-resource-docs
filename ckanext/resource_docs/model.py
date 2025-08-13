@@ -53,7 +53,10 @@ class ResourceDocs(tk.BaseModel):  # type: ignore[call-arg]
     ) -> ResourceDocs:
         """Create new resource docs."""
         resource_docs = cls(
-            resource_id=resource_id, docs=docs, validation_schema=validation_schema, modified_at=datetime.now(tz=UTC)
+            resource_id=resource_id,
+            docs=docs,
+            validation_schema=validation_schema,
+            modified_at=datetime.now(tz=UTC),
         )
         model.Session.add(resource_docs)
         model.Session.commit()

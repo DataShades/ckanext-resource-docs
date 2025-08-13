@@ -54,4 +54,5 @@ class ResourceDocsEditView(MethodView):
             tk.h.flash_error(tk._("Error updating resource documentation: {error}").format(error=e))
             return tk.redirect_to("resource_docs.edit", package_id=package_id, resource_id=resource_id)
 
+
 bp.add_url_rule("/dataset/<package_id>/resource_docs/<resource_id>", view_func=ResourceDocsEditView.as_view("edit"))

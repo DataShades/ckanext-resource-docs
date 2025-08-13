@@ -1,8 +1,10 @@
 [![Tests](https://github.com/DataShades/ckanext-resource-docs/actions/workflows/test.yml/badge.svg)](https://github.com/DataShades/ckanext-resource-docs/actions/workflows/test.yml)
 
-A CKAN extension that lets you attach a flexible, schema-free data dictionary (*resource documentation*) to any resource, not just Datastore-backed ones. It supports custom fields via extensions, reuses CKAN’s existing data dictionary UI, and displays documentation directly on resource pages. Future versions will optionally allow attaching and validating against a defined schema for a resource.
+A CKAN extension that lets you attach a flexible, schema-free data dictionary (resource documentation) to any resource — not just those backed by the Datastore. It supports custom fields via extensions, reuses CKAN’s existing data dictionary UI, and displays documentation directly on resource pages.
 
-> **⚠️ Warning**: This extension is currently in active development. Features and APIs may change without notice.
+New in the latest version: you can now define a **validation schema** for each resource’s documentation individually, using **JSON Schema Draft 2020-12**. This allows you to optionally enforce structure and constraints while still keeping the flexibility of a free-form data dictionary.
+
+You can read the official specification for JSON Schema Draft 2020-12 [here](https://json-schema.org/draft/2020-12/).
 
 - [Requirements](#requirements)
 - [Installation](#installation)
