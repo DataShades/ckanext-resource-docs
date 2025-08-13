@@ -6,17 +6,20 @@ New in the latest version: you can now define a **validation schema** for each r
 
 You can read the official specification for JSON Schema Draft 2020-12 [here](https://json-schema.org/draft/2020-12/).
 
-Here is an example of a resource documentation in a format of Datastore fields. But it's not limited to that format, you can use any custom fields you need.
+Here is an example of a resource documentation in a format of Datastore fields. But it's not limited to that format, you can save any custom data you need.
 
 ![Documentation table](./docs/rdoc-1.png)
 
-It's also possible to define a validation schema for the resource documentation, which will be used to validate the documentation data when it is saved.
+It's also possible to define a validation schema for the resource documentation, which will be used to validate the documentation data.
 
 ![Validation schema](./docs/rdoc-2.png)
 
 - [Requirements](#requirements)
 - [Installation](#installation)
 - [Config settings](#config-settings)
+  - [ckanext.resource\_docs.append\_docs\_to\_resource\_api](#ckanextresource_docsappend_docs_to_resource_api)
+  - [ckanext.resource\_docs.api\_field\_name](#ckanextresource_docsapi_field_name)
+  - [Example API response](#example-api-response)
 - [Developer installation](#developer-installation)
 - [Tests](#tests)
 - [License](#license)
@@ -56,7 +59,62 @@ To install ckanext-resource-docs:
 
 ## Config settings
 
-None at present
+The following options control how ckanext-resource-docs behaves.
+
+### ckanext.resource_docs.append_docs_to_resource_api
+
+Type: `bool`
+
+Default: `false`
+
+When `true`, resource documentation is automatically included in the standard CKAN resource API response. This allows clients to retrieve documentation without making a separate API call.
+
+Example:
+```ini
+ckanext.resource_docs.append_docs_to_resource_api = true
+```
+
+---
+
+### ckanext.resource_docs.api_field_name
+
+Type: `string`
+
+Default: `resource_docs`
+
+Specifies the field name in the API response that will contain the resource documentation. Only applies if `append_docs_to_resource_api` is enabled.
+
+Example:
+```ini
+ckanext.resource_docs.api_field_name = documentation
+```
+
+With this setting, the documentation appears under "documentation" field instead of "resource_docs".
+
+---
+
+### Example API response
+
+With `append_docs_to_resource_api = true` and the default `api_field_name`:
+
+```json
+{
+  "id": "resource-id-123",
+  "name": "my-resource.csv",
+  "url": "https://example.com/data.csv",
+  "format": "CSV",
+  "resource_docs": {
+    "documentation": "This dataset contains...",
+    "fields": [
+      {
+        "name": "column1",
+        "description": "Description of column1",
+        "type": "string"
+      }
+    ]
+  }
+}
+```
 
 ## Developer installation
 

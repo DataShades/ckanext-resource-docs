@@ -8,7 +8,7 @@ from ckan.tests.helpers import call_action  # pyright: ignore[reportUnknownVaria
 from ckanext.resource_docs.model import ResourceDocs
 
 
-@pytest.mark.usefixtures("with_plugins", "clean_db")
+@pytest.mark.usefixtures("with_plugins", "reset_db_once")
 class TestResouceDocsModel:
     """Test resource_docs_override action."""
 

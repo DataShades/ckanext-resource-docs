@@ -67,7 +67,7 @@ def resource_docs_delete(context: types.Context, data_dict: types.DataDict) -> t
         resource_docs.delete()
         return {"success": True, "message": tk._("Resource documentation deleted successfully")}
 
-    raise tk.ObjectNotFound(f"Resource documentation for resource {resource_id} not found")
+    raise tk.ObjectNotFound(f"Resource documentation for resource {resource_id} not found")  # noqa: TRY003
 
 
 @validate(schema.resource_docs_show)
@@ -89,6 +89,6 @@ def resource_docs_show(context: types.Context, data_dict: types.DataDict) -> typ
     resource_docs = ResourceDocs.get_by_resource_id(resource_id)
 
     if not resource_docs:
-        raise tk.ObjectNotFound(f"Resource documentation for resource {resource_id} not found")
+        raise tk.ObjectNotFound(f"Resource documentation for resource {resource_id} not found")  # noqa: TRY003
 
     return resource_docs.dictize(context)

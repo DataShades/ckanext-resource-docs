@@ -7,7 +7,7 @@ from ckan.tests import helpers
 from ckan.tests.helpers import CKANTestApp
 
 
-@pytest.mark.usefixtures("with_plugins", "clean_db")
+@pytest.mark.usefixtures("with_plugins", "reset_db_once")
 class TestResourceDocsEditView:
     """Tests for ResourceDocsEditView."""
 

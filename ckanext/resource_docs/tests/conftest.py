@@ -5,12 +5,14 @@ import factory
 import pytest
 from pytest_factoryboy import register
 
+from ckan.plugins import load_all
 from ckan.tests import factories
 
 
-@pytest.fixture
-def clean_db(reset_db: Callable[..., Any], migrate_db_for: Callable[..., Any]) -> None:
-    """Fixture to clean the database and migrate it."""
+@pytest.fixture(scope="session")
+def reset_db_once(reset_db: Callable[..., Any], migrate_db_for: Callable[..., Any]) -> None:
+    """Internal fixture that cleans DB only the first time it's used."""
+    load_all()
     reset_db()
 
     migrate_db_for("resource_docs")

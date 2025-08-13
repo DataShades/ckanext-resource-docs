@@ -8,7 +8,7 @@ from ckan import types
 from ckan.tests.helpers import call_auth  # pyright: ignore[reportUnknownVariableType]
 
 
-@pytest.mark.usefixtures("with_plugins", "clean_db")
+@pytest.mark.usefixtures("with_plugins", "reset_db_once")
 class TestResourceDocsManageAuth:
     """Tests for resource_docs_manage auth function."""
 
@@ -55,7 +55,7 @@ class TestResourceDocsManageAuth:
         assert call_auth("resource_docs_manage", context=types.Context(user=sysadmin["name"]), id=resource["id"])
 
 
-@pytest.mark.usefixtures("with_plugins", "clean_db")
+@pytest.mark.usefixtures("with_plugins", "reset_db_once")
 class TestResourceDocsShowAuth:
     """Tests for resource_docs_show auth function."""
 
@@ -124,7 +124,7 @@ class TestResourceDocsShowAuth:
             call_auth("resource_docs_show", context=types.Context(user=user["name"]), id="non-existent-resource-id")
 
 
-@pytest.mark.usefixtures("with_plugins", "clean_db")
+@pytest.mark.usefixtures("with_plugins", "reset_db_once")
 class TestResourceDocsAuthIntegration:
     """Integration tests for auth functions."""
 

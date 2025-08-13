@@ -7,16 +7,17 @@ import ckan.plugins.toolkit as tk
 from ckan import types
 from ckan.tests.helpers import call_action  # pyright: ignore[reportUnknownVariableType]
 
+import ckanext.resource_docs.config as config
 from ckanext.resource_docs.model import ResourceDocs
 
 
-@pytest.mark.usefixtures("with_plugins", "clean_db")
+@pytest.mark.usefixtures("with_plugins", "reset_db_once")
 class TestResourceDocsOverride:
     """Test resource_docs_override action."""
 
     def test_create_new_resource_docs(self, resource: dict[str, Any], sysadmin: dict[str, Any]):
         """Test creating new resource documentation."""
-        docs = {"documentation": "This is a test documentation"}
+        docs = {"documentation": "xxx"}
 
         result = call_action(
             "resource_docs_override", types.Context(user=sysadmin["name"]), resource_id=resource["id"], docs=docs
@@ -29,7 +30,7 @@ class TestResourceDocsOverride:
 
     def test_update_existing_resource_docs(self, resource: dict[str, Any], sysadmin: dict[str, Any]):
         """Test updating existing resource documentation."""
-        docs = {"documentation": "This is a test documentation"}
+        docs = {"documentation": "xxx"}
         updated_docs = {"documentation": "This is an updated test documentation"}
 
         call_action(
@@ -140,13 +141,13 @@ class TestResourceDocsOverride:
         assert result["validation_schema"] == validation_schema
 
 
-@pytest.mark.usefixtures("with_plugins", "clean_db")
+@pytest.mark.usefixtures("with_plugins", "reset_db_once")
 class TestResourceDocsShow:
     """Test resource_docs_show action."""
 
     def test_show_existing_resource_docs(self, resource: dict[str, Any], sysadmin: dict[str, Any]):
         """Test showing existing resource documentation."""
-        docs = {"documentation": "This is a test documentation"}
+        docs = {"documentation": "xxx"}
 
         created_result = call_action(
             "resource_docs_override", types.Context(user=sysadmin["name"]), resource_id=resource["id"], docs=docs
@@ -175,13 +176,13 @@ class TestResourceDocsShow:
             call_action("resource_docs_show", types.Context(user=sysadmin["name"]))
 
 
-@pytest.mark.usefixtures("with_plugins", "clean_db")
+@pytest.mark.usefixtures("with_plugins", "reset_db_once")
 class TestResourceDocsDelete:
     """Test resource_docs_delete action."""
 
     def test_delete_existing_resource_docs(self, resource: dict[str, Any], sysadmin: dict[str, Any]):
         """Test deleting existing resource documentation."""
-        docs = {"documentation": "This is a test documentation"}
+        docs = {"documentation": "xxx"}
 
         # Create documentation first
         call_action(
@@ -219,13 +220,13 @@ class TestResourceDocsDelete:
             call_action("resource_docs_delete", types.Context(user=sysadmin["name"]))
 
 
-@pytest.mark.usefixtures("with_plugins", "clean_db")
+@pytest.mark.usefixtures("with_plugins", "reset_db_once")
 class TestResourceDocsIntegration:
     """Integration tests for resource docs actions."""
 
     def test_full_lifecycle(self, resource: dict[str, Any], sysadmin: dict[str, Any]):
         """Test complete lifecycle: create, show, update, delete."""
-        docs = {"documentation": "This is a test documentation"}
+        docs = {"documentation": "xxx"}
         updated_docs = {"documentation": "This is an updated test documentation"}
 
         # 1. Create documentation
@@ -302,3 +303,120 @@ class TestResourceDocsIntegration:
             "resource_docs_show", types.Context(user=sysadmin["name"]), resource_id=resource2["id"]
         )
         assert docs2_after_delete["docs"] == docs2
+
+
+@pytest.mark.usefixtures("with_plugins", "reset_db_once")
+class TestResourceDelete:
+    """Test resource deletion and its impact on resource documentation."""
+
+    def test_drop_docs_on_resource_delete(self, resource: dict[str, Any], sysadmin: dict[str, Any]):
+        """Test deleting a resource with existing documentation."""
+        call_action(
+            "resource_docs_override",
+            types.Context(user=sysadmin["name"]),
+            resource_id=resource["id"],
+            docs={"documentation": "xxx"},
+        )
+
+        assert ResourceDocs.get_by_resource_id(resource["id"]) is not None
+
+        call_action("resource_delete", types.Context(user=sysadmin["name"]), id=resource["id"])
+
+        assert ResourceDocs.get_by_resource_id(resource["id"]) is None
+
+    def test_drop_docs_on_package_delete(self, resource: dict[str, Any], sysadmin: dict[str, Any]):
+        """Test deleting a package with resources and their documentation."""
+        call_action(
+            "resource_docs_override",
+            types.Context(user=sysadmin["name"]),
+            resource_id=resource["id"],
+            docs={"documentation": "xxx"},
+        )
+
+        assert ResourceDocs.get_by_resource_id(resource["id"]) is not None
+
+        call_action("package_delete", types.Context(user=sysadmin["name"]), id=resource["package_id"])
+
+        assert ResourceDocs.get_by_resource_id(resource["id"]) is None
+
+
+@pytest.mark.usefixtures("with_plugins", "reset_db_once")
+class TestAppendResourceDocsToAPI:
+    """Test appending resource documentation to API response."""
+
+    def test_not_appended_by_default(self, resource: dict[str, Any], sysadmin: dict[str, Any]):
+        """Test that resource_docs are not appended by default."""
+        call_action(
+            "resource_docs_override",
+            types.Context(user=sysadmin["name"]),
+            resource_id=resource["id"],
+            docs={"documentation": "xxx"},
+        )
+
+        result = call_action("resource_show", types.Context(user=sysadmin["name"]), id=resource["id"])
+
+        assert "resource_docs" not in result
+
+    @pytest.mark.ckan_config(config.CONF_APPEND_TO_API, True)
+    def test_append_docs_to_resource_show(self, resource: dict[str, Any], sysadmin: dict[str, Any]):
+        """Test appending docs to resource_show action."""
+        docs = {"documentation": "xxx"}
+
+        call_action(
+            "resource_docs_override", types.Context(user=sysadmin["name"]), resource_id=resource["id"], docs=docs
+        )
+
+        result = call_action("resource_show", types.Context(user=sysadmin["name"]), id=resource["id"])
+
+        assert "resource_docs" in result
+        assert result["resource_docs"] == docs
+
+    @pytest.mark.ckan_config(config.CONF_APPEND_TO_API, True)
+    def test_append_docs_to_package_show(self, resource: dict[str, Any], sysadmin: dict[str, Any]):
+        """Test appending docs to package_show action."""
+        docs = {"documentation": "xxx"}
+
+        call_action(
+            "resource_docs_override", types.Context(user=sysadmin["name"]), resource_id=resource["id"], docs=docs
+        )
+
+        result = call_action("package_show", types.Context(user=sysadmin["name"]), id=resource["package_id"])
+
+        assert "resource_docs" in result["resources"][0]
+        assert result["resources"][0]["resource_docs"] == docs
+
+    @pytest.mark.ckan_config(config.CONF_APPEND_TO_API, True)
+    @pytest.mark.usefixtures("clean_index")
+    def test_dont_append_docs_to_package_search(self, resource: dict[str, Any], sysadmin: dict[str, Any]):
+        """Test not appending docs to package_search action."""
+        docs = {"documentation": "xxx"}
+
+        call_action(
+            "resource_docs_override", types.Context(user=sysadmin["name"]), resource_id=resource["id"], docs=docs
+        )
+
+        result = call_action("package_search", types.Context(user=sysadmin["name"]), q="")
+
+        package = result["results"][0]
+
+        assert "resource_docs" not in package["resources"][0]
+
+    @pytest.mark.ckan_config(config.CONF_APPEND_TO_API, True)
+    @pytest.mark.ckan_config(config.CONF_API_FIELD_NAME, "custom_docs")
+    def test_append_with_custom_field_name(self, resource: dict[str, Any], sysadmin: dict[str, Any]):
+        """Test appending docs with custom field name."""
+        docs = {"documentation": "xxx"}
+
+        call_action(
+            "resource_docs_override", types.Context(user=sysadmin["name"]), resource_id=resource["id"], docs=docs
+        )
+
+        result = call_action(
+            "resource_show",
+            types.Context(user=sysadmin["name"]),
+            id=resource["id"],
+            append_resource_docs_field="custom_docs",
+        )
+
+        assert "custom_docs" in result
+        assert result["custom_docs"] == docs

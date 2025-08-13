@@ -1,0 +1,12 @@
+version: 1
+groups:
+  - annotation: ckanext.resource_docs
+    options:
+      - key: ckanext.resource_docs.append_docs_to_resource_api
+        description: Append resource documentation to the resource API response
+        type: bool
+        default: false
+
+      - key: ckanext.resource_docs.api_field_name
+        description: Name of the field in the resource API response that will contain the resource documentation
+        default: resource_docs
