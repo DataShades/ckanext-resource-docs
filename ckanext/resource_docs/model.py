@@ -5,9 +5,10 @@ from typing import Any
 
 from sqlalchemy import Column, DateTime, ForeignKey, Text  # type: ignore[import-untyped]
 from sqlalchemy.dialects.postgresql import JSONB  # type: ignore[import-untyped]
-from sqlalchemy.orm import relationship  # type: ignore[import-untyped]
+from sqlalchemy.orm import backref, relationship  # type: ignore[import-untyped]
 
 from ckan import model, types
+from ckan.model import Resource
 from ckan.model.types import make_uuid
 from ckan.plugins import toolkit as tk
 
@@ -31,7 +32,10 @@ class ResourceDocs(tk.BaseModel):  # type: ignore[call-arg]
     validation_schema = Column(JSONB, nullable=True, default=dict)  # type: ignore[assignment]
     modified_at = Column(DateTime, nullable=False, default=lambda: datetime.now(timezone.utc))  # type: ignore[assignment]
 
-    resource = relationship("Resource", backref="resource_docs")  # type: ignore
+    resource = relationship(  # type: ignore
+        Resource,
+        backref=backref("resource_docs", uselist=False),
+    )
 
     def __repr__(self):
         """Return a string representation of the resource docs."""
@@ -41,11 +45,6 @@ class ResourceDocs(tk.BaseModel):  # type: ignore[call-arg]
     def get_by_resource_id(cls, resource_id: str) -> ResourceDocs | None:
         """Get resource docs by resource ID."""
         return model.Session.query(cls).filter(cls.resource_id == resource_id).first()  # type: ignore[return-value]
-
-    @classmethod
-    def get(cls, docs_id: str) -> ResourceDocs | None:
-        """Get resource docs by ID."""
-        return model.Session.query(cls).filter(cls.id == docs_id).first()  # type: ignore[return-value]
 
     @classmethod
     def create(

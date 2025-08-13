@@ -6,6 +6,14 @@ New in the latest version: you can now define a **validation schema** for each r
 
 You can read the official specification for JSON Schema Draft 2020-12 [here](https://json-schema.org/draft/2020-12/).
 
+Here is an example of a resource documentation in a format of Datastore fields. But it's not limited to that format, you can use any custom fields you need.
+
+![Documentation table](./docs/rdoc-1.png)
+
+It's also possible to define a validation schema for the resource documentation, which will be used to validate the documentation data when it is saved.
+
+![Validation schema](./docs/rdoc-2.png)
+
 - [Requirements](#requirements)
 - [Installation](#installation)
 - [Config settings](#config-settings)
