@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.2.1] - 2025-08-13
+
+### 🐛 Bug Fixes
+
+- Fix resource_docs_show call to support ckan.root_path
+
 ## [0.2.0] - 2025-08-13
 
 ### 🚀 Features
