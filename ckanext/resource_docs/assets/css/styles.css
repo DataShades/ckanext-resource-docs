@@ -1,11 +1,7 @@
-.jsoneditor-menu {
-    background-color: #005d7a;
-}
-
-.jsoneditor-menu .jsoneditor-transform {
+.jse-main label:after {
     display: none;
 }
 
-#jsoneditor-schema .jsoneditor-sort {
-    display: none;
+.rdocs-jsoneditor {
+    --jse-theme-color: #005d7a;
 }

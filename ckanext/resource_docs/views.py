@@ -4,8 +4,6 @@ from flask.views import MethodView
 import ckan.plugins.toolkit as tk
 from ckan import types
 
-from ckanext.resource_docs.exception import ResourceDocsNotFoundError
-
 bp = Blueprint("resource_docs", __name__)
 
 
@@ -29,7 +27,7 @@ class ResourceDocsEditView(MethodView):
 
         try:
             docs = tk.get_action("resource_docs_show")({}, {"resource_id": resource_id})
-        except ResourceDocsNotFoundError:
+        except tk.ObjectNotFound:
             docs = None
 
         return tk.render("resource_docs/edit.html", {"docs": docs, "pkg_dict": pkg_dict, "resource": resource})

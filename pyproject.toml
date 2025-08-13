@@ -1,6 +1,6 @@
 [project]
 name = "ckanext-resource-docs"
-version = "0.0.1"
+version = "0.1.0"
 description = "A CKAN extension that lets you attach a flexible, schema-free data dictionary (“resource documentation”) to any resource, not just Datastore-backed ones."
 readme = "README.md"
 authors = [{ name = "Oleksandr Cherniavskiy", email = "mutantsan@gmail.com" }]
@@ -14,7 +14,9 @@ classifiers = [
 ]
 
 keywords = ["CKAN"]
-dependencies = []
+dependencies = [
+    "jsonschema>=4.25.0,<5.0.0",
+]
 
 [project.urls]
 Homepage = "https://github.com/DataShades/ckanext-resource-docs"
@@ -75,6 +77,7 @@ lint.ignore = [
     "D100",   # do not require docstring for public modules
     "D104",   # do not require docstring for public packages
     "D107",
+    "TRY003", # do not require raising a specific exception
     "RET503", # don't enforce return-None
     "E712",   # comparison to bool: violated by SQLAlchemy filters
     # "PT004", # fixture does not return anything, add leading underscore: violated by clean_db

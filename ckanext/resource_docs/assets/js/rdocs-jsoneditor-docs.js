@@ -16,6 +16,7 @@ ckan.module("rdocs-jsoneditor-docs", function ($, _) {
             }
 
             this.changed = false;
+            this.validationSchema = {};
 
             // event bindings
             document.querySelector(this.options.submitBtnSelector).addEventListener("click", this._onDocumentationSave)
@@ -30,95 +31,116 @@ ckan.module("rdocs-jsoneditor-docs", function ($, _) {
                 url: `/api/3/action/resource_docs_show?resource_id=${this.options.resourceId}`,
                 dataType: 'json',
                 success: (data) => {
-                    if (data.success && data.result) {
-                        this._renderDocsJsonEditor(data.result);
-                        this._renderSchemaJsonEditor(data.result);
+                    const result = data.result || { docs: {}, validation_schema: {} };
+
+                    if (data.success && result) {
+                        this._renderDocsJsonEditor(result);
+                        this._renderSchemaJsonEditor(result);
                     }
                 },
                 error: (xhr, status, error) => {
-                    console.error("Error loading resource docs:", error);
+                    this._renderDocsJsonEditor({});
+                    this._renderSchemaJsonEditor({});
                 }
             });
         },
 
         _renderDocsJsonEditor: function (resDocs) {
             var self = this;
+            this.validationSchema = resDocs.validation_schema || {};
 
             const options = {
-                mode: 'code',
-                modes: ['code', 'view'],
-                schema: resDocs.schema || {},
-                allowSchemaSuggestions: true,
-                navigationBar: true,
-                onChange: () => {
-                    self._toggleSubmitButton(true);
+                mode: 'text',
+                content: { json: resDocs.docs || {} },
+                validator: this._createAjvValidator(resDocs.validation_schema || {}),
+                onChange: (updatedContent, previousContent, { contentErrors, patchResult }) => {
+                    self._toggleSubmitButton(contentErrors === undefined);
                 }
             }
 
-            window.JSONEditorDOCS = new JSONEditor(document.querySelector(this.options.docsContainerSelector), options)
+            window.JSONEditorDOCS = window.createJSONEditor({ target: document.querySelector(this.options.docsContainerSelector), props: options })
+        },
 
-            if (resDocs.docs) {
-                window.JSONEditorDOCS.set(resDocs.docs);
+        _createAjvValidator: function (validation_schema) {
+            try {
+                return window.createAjvValidator({
+                    schema: validation_schema,
+                    schemaDefinitions: {},
+                    ajvOptions: { strict: false },
+                    onCreateAjv: (_) => {
+                        return new window.Ajv2020({ strict: false, allErrors: true });
+                    }
+                })
+            } catch (err) {
+                console.debug("Error creating AJV validator:", err.message);
+                return null;
             }
         },
 
         _renderSchemaJsonEditor: function (resDocs) {
-            const options = {
-                mode: 'code',
-                modes: ['code', 'view'],
-                onChange: function () {
-                    try {
-                        window.JSONEditorDOCS.setSchema(editor.get());
-                        window.JSONEditorDOCS.repair();
-                        window.JSONEditorDOCS.format();
-                        self._toggleSubmitButton(true);
-                    } catch (err) {
-                        console.debug("Invalid JSON, do not use this schema");
+            var self = this;
+
+            window.JSONEditorSCHEMA = window.createJSONEditor({
+                target: document.querySelector(this.options.schemaContainerSelector),
+                props: {
+                    mode: 'text',
+                    content: {
+                        text: undefined,
+                        json: resDocs.validation_schema || {},
+                    },
+                    onChange: function (updatedContent, previousContent, { contentErrors, patchResult }) {
+                        if (contentErrors !== undefined) {
+                            return;
+                        }
+
+                        self.validationSchema = toJSONContent(updatedContent).json;
+                        let validator = self._createAjvValidator(self.validationSchema)
+
+                        try {
+                            window.JSONEditorDOCS.updateProps({ validator: validator })
+                            self._toggleSubmitButton(true);
+                        } catch (err) {
+                            console.debug("Invalid JSON, do not use this schema: ", err.message);
+                        }
                     }
                 }
-            }
-
-            const editor = new JSONEditor(document.querySelector(this.options.schemaContainerSelector), options)
-
-            if (resDocs.validation_schema) {
-                editor.set(resDocs.validation_schema);
-            }
+            })
         },
 
         _onDocumentationSave: function () {
-            window.JSONEditorDOCS.validate().then(errors => {
-                if (errors.length > 0) {
-                    return console.warn("Schema validation errors:", errors);
-                } else {
-                    console.debug("The DOCS JSON is valid ✅");
-                    this._overrideResourceDocs();
-                }
-            });
+            let errors = window.JSONEditorDOCS.validate();
+
+            if (errors === undefined) {
+                this._overrideResourceDocs();
+            } else {
+                this._toggleSubmitButton(false);
+                return console.debug("Schema validation errors:", errors);
+            }
         },
 
         _overrideResourceDocs: function () {
-            const docs = window.JSONEditorDOCS.get();
-            const schema = window.JSONEditorDOCS.options.schema;
+            const docs = toJSONContent(window.JSONEditorDOCS.get());
+            const schema = this.validationSchema;
+            var self = this;
 
             const payload = {
                 resource_id: this.options.resourceId,
-                docs: JSON.stringify(docs),
+                docs: JSON.stringify(docs.json),
                 validation_schema: JSON.stringify(schema)
             };
-            var self = this;
 
             this.sandbox.client.call(
                 "POST",
                 "resource_docs_override",
                 payload,
                 function (response) {
-                    window.JSONEditorDOCS.set(response.result.docs);
-                    ckan.notify('Success', ckan.i18n._("Resource documentation saved successfully"), 'success');
+                    window.JSONEditorDOCS.update({ json: response.result.docs });
+                    ckan.notify('', ckan.i18n._("Resource documentation saved successfully"), 'success');
                     self._toggleSubmitButton(false);
                 },
-                function (error) {
-                    console.error("Error overriding resource docs:", error);
-                    ckan.notify('Error', ckan.i18n._("An error occurred while saving the documentation"), 'error');
+                function (err) {
+                    console.debug("Error overriding resource docs:", err);
+                    ckan.notify('', ckan.i18n._("An error occurred while saving the documentation"), 'error');
                 }
             );
         },

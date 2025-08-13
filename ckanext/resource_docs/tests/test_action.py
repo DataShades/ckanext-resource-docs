@@ -7,7 +7,6 @@ import ckan.plugins.toolkit as tk
 from ckan import types
 from ckan.tests.helpers import call_action  # pyright: ignore[reportUnknownVariableType]
 
-from ckanext.resource_docs.exception import ResourceDocsNotFoundError
 from ckanext.resource_docs.model import ResourceDocs
 
 
@@ -78,6 +77,68 @@ class TestResourceDocsOverride:
                 "resource_docs_override", types.Context(user=sysadmin["name"]), resource_id=resource["id"], docs=""
             )
 
+    def test_validation_schema_can_be_empty(self, resource: dict[str, Any], sysadmin: dict[str, Any]):
+        """Test action with empty validation schema."""
+        call_action(
+            "resource_docs_override",
+            types.Context(user=sysadmin["name"]),
+            resource_id=resource["id"],
+            docs={"documentation": "Test"},
+            validation_schema={},
+        )
+
+    def test_validation_error(self, resource: dict[str, Any], sysadmin: dict[str, Any]):
+        """Test action with invalid docs that do not match validation schema."""
+        validation_schema: dict[str, Any] = {
+            "type": "object",
+            "properties": {
+                "documentation": {"type": "string"},
+                "version": {"type": "number"},
+            },
+            "required": ["documentation", "version"],
+        }
+
+        with pytest.raises(tk.ValidationError, match="'version' is a required property"):
+            call_action(
+                "resource_docs_override",
+                types.Context(user=sysadmin["name"]),
+                resource_id=resource["id"],
+                docs={"documentation": "Test"},
+                validation_schema=validation_schema,
+            )
+
+    def test_use_existing_validation_schema(self, resource: dict[str, Any], sysadmin: dict[str, Any]):
+        """Test using existing validation schema when updating docs."""
+        validation_schema: dict[str, Any] = {
+            "type": "object",
+            "properties": {
+                "documentation": {"type": "string"},
+                "version": {"type": "number"},
+            },
+            "required": ["documentation", "version"],
+        }
+
+        # Create initial docs with validation schema
+        call_action(
+            "resource_docs_override",
+            types.Context(user=sysadmin["name"]),
+            resource_id=resource["id"],
+            docs={"documentation": "hello world", "version": 1.0},
+            validation_schema=validation_schema,
+        )
+
+        # Update without providing validation schema
+        updated_docs: dict[str, Any] = {"documentation": "Updated documentation", "version": 1.0}
+        result = call_action(
+            "resource_docs_override",
+            types.Context(user=sysadmin["name"]),
+            resource_id=resource["id"],
+            docs=updated_docs,
+        )
+
+        assert result["docs"] == updated_docs
+        assert result["validation_schema"] == validation_schema
+
 
 @pytest.mark.usefixtures("with_plugins", "clean_db")
 class TestResourceDocsShow:
@@ -100,7 +161,7 @@ class TestResourceDocsShow:
 
     def test_show_non_existent_resource_docs(self, resource: dict[str, Any], sysadmin: dict[str, Any]):
         """Test showing documentation for resource without docs."""
-        with pytest.raises(ResourceDocsNotFoundError):
+        with pytest.raises(tk.ObjectNotFound):
             call_action("resource_docs_show", types.Context(user=sysadmin["name"]), resource_id=resource["id"])
 
     def test_show_with_non_existent_resource(self, sysadmin: dict[str, Any]):
@@ -144,7 +205,7 @@ class TestResourceDocsDelete:
 
     def test_delete_non_existent_resource_docs(self, resource: dict[str, Any], sysadmin: dict[str, Any]):
         """Test deleting documentation for resource without docs."""
-        with pytest.raises(ResourceDocsNotFoundError):
+        with pytest.raises(tk.ObjectNotFound):
             call_action("resource_docs_delete", types.Context(user=sysadmin["name"]), resource_id=resource["id"])
 
     def test_delete_with_non_existent_resource(self, sysadmin: dict[str, Any]):
@@ -205,7 +266,7 @@ class TestResourceDocsIntegration:
         assert delete_result["success"] is True
 
         # 6. Verify documentation is gone
-        with pytest.raises(ResourceDocsNotFoundError):
+        with pytest.raises(tk.ObjectNotFound):
             call_action("resource_docs_show", types.Context(user=sysadmin["name"]), resource_id=resource["id"])
 
     def test_multiple_resources_isolation(
@@ -233,7 +294,7 @@ class TestResourceDocsIntegration:
         call_action("resource_docs_delete", types.Context(user=sysadmin["name"]), resource_id=resource["id"])
 
         # Resource 1 docs should be gone
-        with pytest.raises(ResourceDocsNotFoundError):
+        with pytest.raises(tk.ObjectNotFound):
             call_action("resource_docs_show", types.Context(user=sysadmin["name"]), resource_id=resource["id"])
 
         # Resource 2 docs should still exist

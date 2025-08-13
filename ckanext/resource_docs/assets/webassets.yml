@@ -4,7 +4,6 @@ resource_docs-js:
   contents:
     - js/vendor/jsoneditor.min.js
     - js/rdocs-jsoneditor-docs.js
-
   extra:
     preload:
       - base/main

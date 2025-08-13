@@ -15,15 +15,14 @@
                     <p>{{ _("Use a JSON Schema to validate the structure and content of the resource metadata.") }}</p>
                     <p>{{ _("This schema ensures that the data adheres to the expected format, types, and required fields, helping to catch errors early and maintain data consistency.") }}</p>
                     <p>{{ _("Learn more about JSON Schema at") }} <a href="https://json-schema.org/">https://json-schema.org/</a></p>
-                    <div id="jsoneditor-schema" style="height: 600px"
-                        class="mb-4"></div>
+                    <div id="jsoneditor-schema" style="height: 600px" class="mb-4 rdocs-jsoneditor"></div>
                 </div>
             </div>
         </div>
     </div>
 
     <label class="form-label">{{ _("Resource Documentation") }}</label>
-    <div id="jsoneditor-docs" data-module="rdocs-jsoneditor-docs" data-module-resource-id="{{ resource.id }}" style="height: 800px" class="mb-3"></div>
+    <div id="jsoneditor-docs" data-module="rdocs-jsoneditor-docs" data-module-resource-id="{{ resource.id }}" style="height: 800px" class="rdocs-jsoneditor mb-3"></div>
 
     <div class="form-actions">
         <button type="button" class="btn btn-primary" id="save-docs">
@@ -33,6 +32,15 @@
 {% endblock %}
 
 {% block scripts %}
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/ajv/8.17.1/ajv2020.min.js"></script>
+    <script type="module">
+        import { createJSONEditor, createAjvValidator, toJSONContent } from 'https://cdn.jsdelivr.net/npm/vanilla-jsoneditor@3.8.0/standalone.min.js';
+        window.createJSONEditor = createJSONEditor;
+        window.createAjvValidator = createAjvValidator;
+        window.toJSONContent = toJSONContent;
+        window.Ajv2020 = ajv2020;
+    </script>
+
     {% asset "resource_docs/resource_docs-js" %}
 
     {{ super() }}
