@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from datetime import UTC, datetime
+from datetime import datetime, timezone
 from typing import Any
 
 from sqlalchemy import Column, DateTime, ForeignKey, Text  # type: ignore[import-untyped]
@@ -29,7 +29,7 @@ class ResourceDocs(tk.BaseModel):  # type: ignore[call-arg]
     resource_id = Column(Text, ForeignKey("resource.id", ondelete="CASCADE"), nullable=False, unique=True)  # type: ignore[assignment]
     docs = Column(JSONB, nullable=False, default=dict)  # type: ignore[assignment]
     validation_schema = Column(JSONB, nullable=True, default=dict)  # type: ignore[assignment]
-    modified_at = Column(DateTime, nullable=False, default=lambda: datetime.now(UTC))  # type: ignore[assignment]
+    modified_at = Column(DateTime, nullable=False, default=lambda: datetime.now(timezone.utc))  # type: ignore[assignment]
 
     resource = relationship("Resource", backref="resource_docs")  # type: ignore
 
@@ -56,7 +56,7 @@ class ResourceDocs(tk.BaseModel):  # type: ignore[call-arg]
             resource_id=resource_id,
             docs=docs,
             validation_schema=validation_schema,
-            modified_at=datetime.now(tz=UTC),
+            modified_at=datetime.now(tz=timezone.utc),
         )
         model.Session.add(resource_docs)
         model.Session.commit()
@@ -65,7 +65,7 @@ class ResourceDocs(tk.BaseModel):  # type: ignore[call-arg]
     def update(self, docs: dict[str, Any], validation_schema: dict[str, Any] | None = None) -> ResourceDocs:
         """Update the docs and modified_at timestamp."""
         self.docs = docs
-        self.modified_at = datetime.now(tz=UTC)
+        self.modified_at = datetime.now(tz=timezone.utc)
 
         if validation_schema:
             self.validation_schema = validation_schema

@@ -1,6 +1,6 @@
 [project]
 name = "ckanext-resource-docs"
-version = "0.1.1"
+version = "0.1.2"
 description = "A CKAN extension that lets you attach a flexible, schema-free data dictionary (“resource documentation”) to any resource, not just Datastore-backed ones."
 readme = "README.md"
 authors = [{ name = "Oleksandr Cherniavskiy", email = "mutantsan@gmail.com" }]
@@ -38,7 +38,7 @@ filterwarnings = [
 addopts = "--ckan-ini test.ini"
 
 [tool.ruff]
-target-version = "py311"
+target-version = "py310"
 exclude = ["**/migration"]
 line-length = 120
 lint.select = [
@@ -85,7 +85,7 @@ lint.ignore = [
 ]
 
 [tool.ruff.lint.per-file-ignores]
-"ckanext/resource_docs/tests*" = ["S", "PL", "ANN", "D102"]
+"ckanext/resource_docs/tests*" = ["S", "PL", "ANN", "D102", "UP017"]
 "ckanext/resource_docs/logic/schema.py" = [
     "PLR0913",
 ] # schemas requires many arguments
@@ -114,7 +114,7 @@ ckanext = ["ckanext"]
 self = ["ckanext.resource_docs"]
 
 [tool.pyright]
-pythonVersion = "3.11"
+pythonVersion = "3.10"
 include = ["ckanext"]
 exclude = ["**/test*", "**/migration", "ckan/tests"]
 strict = []
