@@ -27,22 +27,25 @@ ckan.module("rdocs-jsoneditor-docs", function ($, _) {
         },
 
         _loadResourceDocs: function () {
-            $.ajax({
-                url: `/api/3/action/resource_docs_show?resource_id=${this.options.resourceId}`,
-                dataType: 'json',
-                success: (data) => {
+            var self = this;
+
+            this.sandbox.client.call(
+                "GET",
+                "resource_docs_show",
+                `?resource_id=${this.options.resourceId}`,
+                function (data) {
                     const result = data.result || { docs: {}, validation_schema: {} };
 
                     if (data.success && result) {
-                        this._renderDocsJsonEditor(result);
-                        this._renderSchemaJsonEditor(result);
+                        self._renderDocsJsonEditor(result);
+                        self._renderSchemaJsonEditor(result);
                     }
                 },
-                error: (xhr, status, error) => {
-                    this._renderDocsJsonEditor({});
-                    this._renderSchemaJsonEditor({});
+                function (err) {
+                    self._renderDocsJsonEditor({});
+                    self._renderSchemaJsonEditor({});
                 }
-            });
+            );
         },
 
         _renderDocsJsonEditor: function (resDocs) {
