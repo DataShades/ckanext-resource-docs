@@ -2,7 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
-## [unreleased]
+## [0.2.0] - 2025-08-13
+
+### 🚀 Features
+
+- Add option to append resource docs on an API response
+
+## [0.1.4] - 2025-08-13
 
 ### 🐛 Bug Fixes
 
