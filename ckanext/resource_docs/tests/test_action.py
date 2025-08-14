@@ -420,3 +420,26 @@ class TestAppendResourceDocsToAPI:
 
         assert "custom_docs" in result
         assert result["custom_docs"] == docs
+
+
+@pytest.mark.usefixtures("with_plugins", "reset_db_once")
+class TestResourceCreate:
+    """Test resource creation and its impact on resource documentation."""
+
+    @pytest.mark.ckan_config(config.CONF_APPEND_TO_API, True)
+    def test_resource_create_when_another_resource_with_appended_rdocs_exists(
+        self, sysadmin: dict[str, Any], resource_factory: Callable[..., dict[str, Any]]
+    ):
+        """Test creating a resource with documentation."""
+        resource = resource_factory()
+
+        call_action(
+            "resource_docs_override",
+            types.Context(user=sysadmin["name"]),
+            resource_id=resource["id"],
+            docs={"test": "xxx"},
+        )
+
+        assert resource_factory()
+
+        assert call_action("package_update", id=resource["package_id"], notes="xxx")

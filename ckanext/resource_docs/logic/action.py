@@ -4,6 +4,7 @@ from ckan import types
 from ckan.logic import validate
 from ckan.plugins import toolkit as tk
 
+from ckanext.resource_docs.config import ExtConfig
 from ckanext.resource_docs.logic import schema
 from ckanext.resource_docs.model import ResourceDocs
 from ckanext.resource_docs.utils import validate_json_with_schema
@@ -92,3 +93,34 @@ def resource_docs_show(context: types.Context, data_dict: types.DataDict) -> typ
         raise tk.ObjectNotFound(f"Resource documentation for resource {resource_id} not found")  # noqa: TRY003
 
     return resource_docs.dictize(context)
+
+
+@tk.side_effect_free
+@tk.chained_action
+def resource_show(next: types.Action, context: types.Context, data_dict: types.DataDict) -> types.DataDict:
+    """Append resource documentation to resource dict if configured."""
+    result = next(context, data_dict)
+
+    if not ExtConfig.append_docs_to_api() or context.get("for_update"):
+        return result
+
+    if resource_docs := ResourceDocs.get_by_resource_id(result.get("id", "")):
+        result[ExtConfig.get_api_field_name()] = resource_docs.docs
+
+    return result
+
+
+@tk.side_effect_free
+@tk.chained_action
+def package_show(next: types.Action, context: types.Context, data_dict: types.DataDict) -> types.DataDict:
+    """Append resource documentation to package dict if configured."""
+    result = next(context, data_dict)
+
+    if not ExtConfig.append_docs_to_api() or context.get("for_update"):
+        return result
+
+    for resource in result.get("resources", []):
+        if resource_docs := ResourceDocs.get_by_resource_id(resource.get("id", "")):
+            resource[ExtConfig.get_api_field_name()] = resource_docs.docs
+
+    return result

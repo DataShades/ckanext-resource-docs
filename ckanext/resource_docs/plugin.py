@@ -29,16 +29,6 @@ class ResourceDocsPlugin(p.SingletonPlugin):
 
     # IResourceController
 
-    def before_resource_show(self, resource_dict: dict[str, Any]) -> dict[str, Any]:
-        """Append resource documentation to resource dict if configured."""
-        if not ExtConfig.append_docs_to_api():
-            return resource_dict
-
-        if resource_docs := ResourceDocs.get_by_resource_id(resource_dict.get("id", "")):
-            resource_dict[ExtConfig.get_api_field_name()] = resource_docs.docs
-
-        return resource_dict
-
     def before_resource_delete(self, context: types.Context, resource: dict[str, Any], _: list[dict[str, Any]]) -> None:
         """Store resource ID to delete resource documentation later."""
         context["_resource_to_delete"] = resource["id"]  # type: ignore
