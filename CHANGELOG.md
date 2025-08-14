@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.2.2] - 2025-08-14
+
+### 🐛 Bug Fixes
+
+- Fix bug when error on resource_create due to resource_docs appended to data
+
 ## [0.2.1] - 2025-08-13
 
 ### 🐛 Bug Fixes
