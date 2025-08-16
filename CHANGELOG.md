@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.3.0] - 2025-08-16
+
+### 🚀 Features
+
+- Add resource docs view
+
 ## [0.2.2] - 2025-08-14
 
 ### 🐛 Bug Fixes
