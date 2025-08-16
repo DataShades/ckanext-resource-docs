@@ -1,5 +1,3 @@
-from typing import Any
-
 from ckan import types
 from ckan.logic import validate
 from ckan.plugins import toolkit as tk
@@ -28,10 +26,10 @@ def resource_docs_override(context: types.Context, data_dict: types.DataDict) ->
 
     existing_docs = ResourceDocs.get_by_resource_id(data_dict["resource_id"])
 
-    validation_schema: dict[str, Any] = data_dict.get("validation_schema", {})
-
-    if existing_docs and existing_docs.validation_schema and not validation_schema:
-        validation_schema = existing_docs.validation_schema  # type: ignore
+    if "validation_schema" in data_dict:
+        validation_schema = data_dict["validation_schema"]
+    else:
+        validation_schema = existing_docs.validation_schema if existing_docs and existing_docs.validation_schema else {}  # type: ignore
 
     error = validate_json_with_schema(data_dict["docs"], validation_schema)
 
@@ -39,11 +37,9 @@ def resource_docs_override(context: types.Context, data_dict: types.DataDict) ->
         raise tk.ValidationError(error)
 
     if existing_docs:
-        resource_docs = existing_docs.update(data_dict["docs"], data_dict.get("validation_schema", None))
+        resource_docs = existing_docs.update(data_dict["docs"], validation_schema)
     else:
-        resource_docs = ResourceDocs.create(
-            data_dict["resource_id"], data_dict["docs"], data_dict.get("validation_schema", None)
-        )
+        resource_docs = ResourceDocs.create(data_dict["resource_id"], data_dict["docs"], validation_schema)
 
     return resource_docs.dictize(context)
 

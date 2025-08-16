@@ -140,6 +140,35 @@ class TestResourceDocsOverride:
         assert result["docs"] == updated_docs
         assert result["validation_schema"] == validation_schema
 
+    def test_override_to_empty_schema(self, resource: dict[str, Any], sysadmin: dict[str, Any]):
+        """Test overriding existing docs with empty schema."""
+        validation_schema: dict[str, Any] = {
+            "type": "object",
+            "properties": {
+                "documentation": {"type": "string"},
+                "version": {"type": "number"},
+            },
+            "required": ["documentation", "version"],
+        }
+
+        # Create initial docs with validation schema
+        call_action(
+            "resource_docs_override",
+            types.Context(user=sysadmin["name"]),
+            resource_id=resource["id"],
+            docs={"documentation": "hello world", "version": 1.0},
+            validation_schema=validation_schema,
+        )
+
+        # Update with empty validation schema
+        assert call_action(
+            "resource_docs_override",
+            types.Context(user=sysadmin["name"]),
+            resource_id=resource["id"],
+            docs={"xxx": "yyy"},
+            validation_schema={},
+        )
+
 
 @pytest.mark.usefixtures("with_plugins", "reset_db_once")
 class TestResourceDocsShow:

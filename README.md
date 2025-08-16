@@ -18,8 +18,9 @@ It's also possible to define a validation schema for the resource documentation,
 - [Installation](#installation)
 - [Config settings](#config-settings)
   - [ckanext.resource\_docs.append\_docs\_to\_resource\_api](#ckanextresource_docsappend_docs_to_resource_api)
+    - [Example API response](#example-api-response)
   - [ckanext.resource\_docs.api\_field\_name](#ckanextresource_docsapi_field_name)
-  - [Example API response](#example-api-response)
+  - [ckanext.resource\_docs.show\_view](#ckanextresource_docsshow_view)
 - [Developer installation](#developer-installation)
 - [Tests](#tests)
 - [License](#license)
@@ -74,26 +75,7 @@ Example:
 ckanext.resource_docs.append_docs_to_resource_api = true
 ```
 
----
-
-### ckanext.resource_docs.api_field_name
-
-Type: `string`
-
-Default: `resource_docs`
-
-Specifies the field name in the API response that will contain the resource documentation. Only applies if `append_docs_to_resource_api` is enabled.
-
-Example:
-```ini
-ckanext.resource_docs.api_field_name = documentation
-```
-
-With this setting, the documentation appears under "documentation" field instead of "resource_docs".
-
----
-
-### Example API response
+#### Example API response
 
 With `append_docs_to_resource_api = true` and the default `api_field_name`:
 
@@ -114,6 +96,40 @@ With `append_docs_to_resource_api = true` and the default `api_field_name`:
     ]
   }
 }
+```
+
+---
+
+### ckanext.resource_docs.api_field_name
+
+Type: `string`
+
+Default: `resource_docs`
+
+Specifies the field name in the API response that will contain the resource documentation. Only applies if `append_docs_to_resource_api` is enabled.
+
+Example:
+```ini
+ckanext.resource_docs.api_field_name = documentation
+```
+
+With this setting, the documentation appears under "documentation" field instead of "resource_docs".
+
+---
+
+### ckanext.resource_docs.show_view
+
+Type: `bool`
+
+Default: `false`
+
+When `true`, the resource documentation is displayed in the resource view page in the CKAN web interface.
+
+Example:
+```ini
+ckanext.resource_docs.show_view = true
+
+![Resource doc view example](rdoc-3.png)
 ```
 
 ## Developer installation

@@ -96,7 +96,11 @@ ckan.module("rdocs-jsoneditor-docs", function ($, _) {
                             return;
                         }
 
-                        self.validationSchema = toJSONContent(updatedContent).json;
+                        if (updatedContent.text === "") {
+                            updatedContent = {"text": "{}"}
+                        }
+
+                        self.validationSchema = toJSONContent(updatedContent).json || {};
                         let validator = self._createAjvValidator(self.validationSchema)
 
                         try {

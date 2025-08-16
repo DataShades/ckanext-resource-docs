@@ -8,13 +8,13 @@ def resource_docs_override(
     unicode_safe: types.Validator,
     resource_id_exists: types.Validator,
     convert_to_json_if_string: types.Validator,
-    ignore_empty: types.Validator,
+    ignore_missing: types.Validator,
 ) -> types.Schema:
     """Schema for creating or updating resource documentation."""
     return {
         "resource_id": [not_empty, unicode_safe, resource_id_exists],
         "docs": [not_empty, unicode_safe, convert_to_json_if_string],
-        "validation_schema": [ignore_empty, convert_to_json_if_string],
+        "validation_schema": [ignore_missing, convert_to_json_if_string],
     }
 
 

@@ -15,12 +15,12 @@ class TestResourceDocsManageAuth:
     def test_anon_user_cannot_manage_resource_docs(self, resource: dict[str, Any]):
         """Anonymous users cannot manage resource documentation."""
         with pytest.raises(tk.NotAuthorized):
-            call_auth("resource_docs_manage", context=types.Context(user=""), id=resource["id"])
+            call_auth("resource_docs_manage", context=types.Context(user=""), resource_id=resource["id"])
 
     def test_regular_user_cannot_manage_others_resource_docs(self, resource: dict[str, Any], user: dict[str, Any]):
         """Regular users cannot manage resource docs they don't own."""
         with pytest.raises(tk.NotAuthorized):
-            call_auth("resource_docs_manage", context=types.Context(user=user["name"]), id=resource["id"])
+            call_auth("resource_docs_manage", context=types.Context(user=user["name"]), resource_id=resource["id"])
 
     def test_nonexistent_resource(self, user: dict[str, Any]):
         """Managing docs for non-existent resource should fail."""
@@ -45,14 +45,18 @@ class TestResourceDocsManageAuth:
         resource = dataset["resources"][0]
 
         if expected_success:
-            assert call_auth("resource_docs_manage", context=types.Context(user=user["name"]), id=resource["id"])
+            assert call_auth(
+                "resource_docs_manage", context=types.Context(user=user["name"]), resource_id=resource["id"]
+            )
         else:
             with pytest.raises(tk.NotAuthorized):
-                call_auth("resource_docs_manage", context=types.Context(user=user["name"]), id=resource["id"])
+                call_auth("resource_docs_manage", context=types.Context(user=user["name"]), resource_id=resource["id"])
 
     def test_sysadmin_can_manage_any_resource_docs(self, resource: dict[str, Any], sysadmin: dict[str, Any]):
         """Sysadmins can manage any resource documentation."""
-        assert call_auth("resource_docs_manage", context=types.Context(user=sysadmin["name"]), id=resource["id"])
+        assert call_auth(
+            "resource_docs_manage", context=types.Context(user=sysadmin["name"]), resource_id=resource["id"]
+        )
 
 
 @pytest.mark.usefixtures("with_plugins", "reset_db_once")
@@ -61,11 +65,11 @@ class TestResourceDocsShowAuth:
 
     def test_anon_user_can_view_public_resource_docs(self, resource: dict[str, Any]):
         """Anonymous users can view docs for public resources."""
-        assert call_auth("resource_docs_show", context=types.Context(user=""), id=resource["id"])
+        assert call_auth("resource_docs_show", context=types.Context(user=""), resource_id=resource["id"])
 
     def test_regular_user_can_view_public_resource_docs(self, resource: dict[str, Any], user: dict[str, Any]):
         """Regular users can view docs for public resources."""
-        assert call_auth("resource_docs_show", context=types.Context(user=user["name"]), id=resource["id"])
+        assert call_auth("resource_docs_show", context=types.Context(user=user["name"]), resource_id=resource["id"])
 
     def test_anon_user_cannot_view_private_resource_docs(self, dataset_factory: Callable[..., dict[str, Any]]):
         """Anonymous users cannot view docs for private resources."""
@@ -73,7 +77,7 @@ class TestResourceDocsShowAuth:
         resource = dataset["resources"][0]
 
         with pytest.raises(tk.NotAuthorized):
-            call_auth("resource_docs_show", context=types.Context(user=""), id=resource["id"])
+            call_auth("resource_docs_show", context=types.Context(user=""), resource_id=resource["id"])
 
     def test_unauthorized_user_cannot_view_private_resource_docs(
         self, dataset_factory: Callable[..., dict[str, Any]], user: dict[str, Any]
@@ -84,7 +88,7 @@ class TestResourceDocsShowAuth:
         resource = dataset["resources"][0]
 
         with pytest.raises(tk.NotAuthorized):
-            call_auth("resource_docs_show", context=types.Context(user=user["name"]), id=resource["id"])
+            call_auth("resource_docs_show", context=types.Context(user=user["name"]), resource_id=resource["id"])
 
     @pytest.mark.parametrize(
         ("org_role", "expected_success"),
@@ -106,7 +110,7 @@ class TestResourceDocsShowAuth:
         dataset = dataset_factory(owner_org=organization["id"], private=True, resources=[{"name": "test_resource"}])
         resource = dataset["resources"][0]
 
-        assert call_auth("resource_docs_show", context=types.Context(user=user["name"]), id=resource["id"])
+        assert call_auth("resource_docs_show", context=types.Context(user=user["name"]), resource_id=resource["id"])
 
     def test_sysadmin_can_view_any_resource_docs(
         self, dataset_factory: Callable[..., dict[str, Any]], sysadmin: dict[str, Any]
@@ -116,7 +120,7 @@ class TestResourceDocsShowAuth:
         dataset = dataset_factory(private=True, resources=[{"name": "test_resource"}])
         resource = dataset["resources"][0]
 
-        assert call_auth("resource_docs_show", context=types.Context(user=sysadmin["name"]), id=resource["id"])
+        assert call_auth("resource_docs_show", context=types.Context(user=sysadmin["name"]), resource_id=resource["id"])
 
     def test_nonexistent_resource(self, user: dict[str, Any]):
         """Viewing docs for non-existent resource should fail."""
@@ -132,10 +136,10 @@ class TestResourceDocsAuthIntegration:
         """Show permissions should be more permissive than manage permissions."""
         # User cannot manage others' resources
         with pytest.raises(tk.NotAuthorized):
-            call_auth("resource_docs_manage", context=types.Context(user=user["name"]), id=resource["id"])
+            call_auth("resource_docs_manage", context=types.Context(user=user["name"]), resource_id=resource["id"])
 
         # But can view public resources
-        assert call_auth("resource_docs_show", context=types.Context(user=user["name"]), id=resource["id"])
+        assert call_auth("resource_docs_show", context=types.Context(user=user["name"]), resource_id=resource["id"])
 
     def test_auth_functions_handle_missing_resource_id(self, user: dict[str, Any]):
         """Auth functions should handle missing resource_id gracefully."""

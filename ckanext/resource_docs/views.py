@@ -14,7 +14,9 @@ class ResourceDocsEditView(MethodView):
         """Render the edit page for resource documentation."""
         try:
             tk.check_access(
-                "resource_docs_manage", context=types.Context(user=tk.current_user.name), data_dict={"id": resource_id}
+                "resource_docs_manage",
+                context=types.Context(user=tk.current_user.name),
+                data_dict={"resource_id": resource_id},
             )
 
             pkg_dict = tk.get_action("package_show")({}, {"id": package_id})

@@ -5,7 +5,6 @@ from ckan import plugins as p
 from ckan.common import CKANConfig
 from ckan.plugins import toolkit as tk
 
-from ckanext.resource_docs.config import ExtConfig
 from ckanext.resource_docs.model import ResourceDocs
 
 
@@ -13,6 +12,7 @@ from ckanext.resource_docs.model import ResourceDocs
 @tk.blanket.auth_functions
 @tk.blanket.blueprints
 @tk.blanket.config_declarations
+@tk.blanket.helpers
 class ResourceDocsPlugin(p.SingletonPlugin):
     """Extension entry point."""
 

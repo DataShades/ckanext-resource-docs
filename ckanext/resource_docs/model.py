@@ -66,7 +66,7 @@ class ResourceDocs(tk.BaseModel):  # type: ignore[call-arg]
         self.docs = docs
         self.modified_at = datetime.now(tz=timezone.utc)
 
-        if validation_schema:
+        if validation_schema is not None:
             self.validation_schema = validation_schema
 
         model.Session.commit()

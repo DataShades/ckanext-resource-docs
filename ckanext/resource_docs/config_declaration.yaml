@@ -10,3 +10,8 @@ groups:
       - key: ckanext.resource_docs.api_field_name
         description: Name of the field in the resource API response that will contain the resource documentation
         default: resource_docs
+
+      - key: ckanext.resource_docs.show_view
+        description: Whether to show the resource documentation view in the UI
+        type: bool
+        default: true

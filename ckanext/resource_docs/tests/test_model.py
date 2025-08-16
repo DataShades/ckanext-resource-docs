@@ -27,4 +27,4 @@ class TestResouceDocsModel:
         assert resource_docs.id == result["id"]
         assert resource_docs.docs == docs
         assert resource_docs.resource_id == resource["id"]
-        assert resource_docs.validation_schema is None
+        assert resource_docs.validation_schema == {}
