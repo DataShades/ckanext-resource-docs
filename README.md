@@ -131,7 +131,8 @@ ckanext.resource_docs.show_view = true
 ```
 
 View example:
-![Resource doc view example](rdoc-3.png)
+![Resource doc view example](./docs/rdoc-3.png)
+
 
 ## Developer installation
 
