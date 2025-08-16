@@ -128,9 +128,10 @@ When `true`, the resource documentation is displayed in the resource view page i
 Example:
 ```ini
 ckanext.resource_docs.show_view = true
-
-![Resource doc view example](rdoc-3.png)
 ```
+
+View example:
+![Resource doc view example](rdoc-3.png)
 
 ## Developer installation
 
