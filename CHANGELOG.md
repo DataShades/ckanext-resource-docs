@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.4.1] - 2025-08-20
+
+### 🐛 Bug Fixes
+
+- Fix empty docs_prepopulate render
+
 ## [0.4.0] - 2025-08-20
 
 ### 🚀 Features
