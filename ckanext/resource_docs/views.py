@@ -40,7 +40,7 @@ class ResourceDocsEditView(MethodView):
                     break
 
         return tk.render(
-            "resource_docs/edit.html", {"docs_prepopulate": docs, "pkg_dict": pkg_dict, "resource": resource}
+            "resource_docs/edit.html", {"docs_prepopulate": docs or "{}", "pkg_dict": pkg_dict, "resource": resource}
         )
 
 
