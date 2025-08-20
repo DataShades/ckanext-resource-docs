@@ -5,6 +5,7 @@ from ckan import plugins as p
 from ckan.common import CKANConfig
 from ckan.plugins import toolkit as tk
 
+from ckanext.resource_docs.config import ExtConfig
 from ckanext.resource_docs.model import ResourceDocs
 
 
@@ -29,6 +30,14 @@ class ResourceDocsPlugin(p.SingletonPlugin):
 
     # IResourceController
 
+    def before_resource_create(self, context: types.Context, resource: dict[str, Any]) -> None:
+        """Pop out the resource_docs field."""
+        resource.pop(ExtConfig.get_api_field_name(), None)
+
+    def before_resource_update(self, context: types.Context, current: dict[str, Any], resource: dict[str, Any]) -> None:
+        """Pop out the resource_docs field."""
+        resource.pop(ExtConfig.get_api_field_name(), None)
+
     def before_resource_delete(self, context: types.Context, resource: dict[str, Any], _: list[dict[str, Any]]) -> None:
         """Store resource ID to delete resource documentation later."""
         context["_resource_to_delete"] = resource["id"]  # type: ignore
@@ -41,7 +50,7 @@ class ResourceDocsPlugin(p.SingletonPlugin):
     # IPackageController
 
     def delete(self, package: "model.Package") -> None:
-        """Drop resource documentation when a package is deleted."""
+        """Drop resources documentation when a package is deleted."""
         for resource in package.resources:
             resource_docs = cast(ResourceDocs, getattr(resource, "resource_docs", None))
 

@@ -53,3 +53,16 @@ def generate_unique_element_id(length: int = 12) -> str:
     alnum = letters + string.digits + "-_"
     unique_str = "".join(secrets.choice(alnum) for _ in range(length - 1))
     return f"id_{secrets.choice(letters)}{unique_str}"
+
+
+def get_column_names(data: list[dict[str, Any]]) -> list[str]:
+    """Get unique column names from a list of dictionaries."""
+    if not data:
+        return []
+
+    column_names = set()
+
+    for item in data:
+        column_names.update(item.keys())
+
+    return sorted(column_names)

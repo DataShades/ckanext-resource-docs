@@ -29,7 +29,7 @@ class ResourceDocs(tk.BaseModel):  # type: ignore[call-arg]
     id = Column(Text, primary_key=True, default=make_uuid)  # type: ignore[assignment]
     resource_id = Column(Text, ForeignKey("resource.id", ondelete="CASCADE"), nullable=False, unique=True)  # type: ignore[assignment]
     docs = Column(JSONB, nullable=False, default=dict)  # type: ignore[assignment]
-    validation_schema = Column(JSONB, nullable=True, default=dict)  # type: ignore[assignment]
+    validation_schema: dict[str, Any] = Column(JSONB, nullable=True, default=dict)  # type: ignore[assignment]
     modified_at = Column(DateTime, nullable=False, default=lambda: datetime.now(timezone.utc))  # type: ignore[assignment]
 
     resource = relationship(  # type: ignore
@@ -45,6 +45,14 @@ class ResourceDocs(tk.BaseModel):  # type: ignore[call-arg]
     def get_by_resource_id(cls, resource_id: str) -> ResourceDocs | None:
         """Get resource docs by resource ID."""
         return model.Session.query(cls).filter(cls.resource_id == resource_id).first()  # type: ignore[return-value]
+
+    @classmethod
+    def get_by_resources_ids(cls, resources_ids: list[str]) -> dict[str, ResourceDocs]:
+        """Get multiple resource docs by resource IDs."""
+        return {
+            res_doc.resource_id: res_doc
+            for res_doc in model.Session.query(cls).filter(cls.resource_id.in_(resources_ids))
+        }
 
     @classmethod
     def create(

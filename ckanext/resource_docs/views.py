@@ -1,8 +1,11 @@
 from flask import Blueprint
 from flask.views import MethodView
 
+import ckan.plugins as p
 import ckan.plugins.toolkit as tk
 from ckan import types
+
+from ckanext.resource_docs.interfaces import IResourceDocs
 
 bp = Blueprint("resource_docs", __name__)
 
@@ -30,7 +33,15 @@ class ResourceDocsEditView(MethodView):
         except tk.ObjectNotFound:
             docs = None
 
-        return tk.render("resource_docs/edit.html", {"docs": docs, "pkg_dict": pkg_dict, "resource": resource})
+            for plugin in p.PluginImplementations(IResourceDocs):
+                docs = plugin.prepopulate_resource_docs(resource)
+
+                if docs:
+                    break
+
+        return tk.render(
+            "resource_docs/edit.html", {"docs_prepopulate": docs, "pkg_dict": pkg_dict, "resource": resource}
+        )
 
 
 bp.add_url_rule("/dataset/<package_id>/resource_docs/<resource_id>", view_func=ResourceDocsEditView.as_view("edit"))

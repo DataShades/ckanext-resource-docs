@@ -472,3 +472,25 @@ class TestResourceCreate:
         assert resource_factory()
 
         assert call_action("package_update", id=resource["package_id"], notes="xxx")
+
+    def test_resource_create_with_resource_docs_field(self, resource_factory: Callable[..., dict[str, Any]]):
+        """Test the resource_docs field won't be added to the resource during creation."""
+        field_name = config.ExtConfig.get_api_field_name()
+        resource = resource_factory(**{field_name: {"test": "xxx"}})
+
+        assert field_name not in resource
+
+
+@pytest.mark.usefixtures("with_plugins", "reset_db_once")
+class TestResourceUpdate:
+    """Test resource update and its impact on resource documentation."""
+
+    def test_resource_update_with_resource_docs_field(self, sysadmin: dict[str, Any], resource: dict[str, Any]):
+        """Test the resource_docs field won't be added to the resource during update."""
+        field_name = config.ExtConfig.get_api_field_name()
+
+        result = call_action(
+            "resource_patch", types.Context(user=sysadmin["name"]), id=resource["id"], **{field_name: {"test": "xxx"}}
+        )
+
+        assert field_name not in result

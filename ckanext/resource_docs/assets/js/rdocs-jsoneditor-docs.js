@@ -4,6 +4,7 @@ ckan.module("rdocs-jsoneditor-docs", function ($, _) {
     return {
         options: {
             resourceId: null,
+            docsPrepopulate: {},
             submitBtnSelector: "#save-docs",
             schemaContainerSelector: "#jsoneditor-schema",
             docsContainerSelector: "#jsoneditor-docs"
@@ -42,8 +43,9 @@ ckan.module("rdocs-jsoneditor-docs", function ($, _) {
                     }
                 },
                 function (err) {
-                    self._renderDocsJsonEditor({});
+                    self._renderDocsJsonEditor({docs: self.options.docsPrepopulate} || {});
                     self._renderSchemaJsonEditor({});
+                    self._toggleSubmitButton(true);
                 }
             );
         },
@@ -126,7 +128,13 @@ ckan.module("rdocs-jsoneditor-docs", function ($, _) {
         },
 
         _overrideResourceDocs: function () {
-            const docs = toJSONContent(window.JSONEditorDOCS.get());
+            let content = window.JSONEditorDOCS.get();
+
+            if (!content.text) {
+                content = {text: {}}
+            }
+
+            const docs = toJSONContent(content);
             const schema = this.validationSchema;
             var self = this;
 

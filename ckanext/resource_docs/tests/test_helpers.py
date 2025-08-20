@@ -9,6 +9,7 @@ from ckanext.resource_docs.helpers import (
     detect_view_type,
     fetch_resource_docs_data,
     generate_unique_element_id,
+    get_column_names,
     show_resource_docs_view,
 )
 
@@ -48,7 +49,7 @@ class TestFetchResourceDocsData:
         assert fetch_resource_docs_data({"id": resource["id"]})
 
 
-@pytest.mark.usefixtures("with_plugins", "clean_db")
+@pytest.mark.usefixtures("with_plugins", "reset_db_once")
 class TestDetectViewType:
     """Tests for detect_view_type helper."""
 
@@ -121,7 +122,7 @@ class TestDetectViewType:
         assert detect_view_type(complex_list) == "list-table"
 
 
-@pytest.mark.usefixtures("with_plugins", "clean_db")
+@pytest.mark.usefixtures("with_plugins", "reset_db_once")
 class TestGenerateUniqueElementID:
     """Test the generation of unique element IDs."""
 
@@ -153,3 +154,33 @@ class TestGenerateUniqueElementID:
             unique_ids.add(element_id)
 
         assert len(unique_ids) == 100
+
+
+@pytest.mark.usefixtures("with_plugins")
+class TestGetColumnNames:
+    """Tests for get_column_names helper."""
+
+    def test_returns_empty_list_for_empty_data(self) -> None:
+        """Test returns empty list for empty data."""
+        assert get_column_names([]) == []
+
+    def test_returns_sorted_columns_for_single_dict(self) -> None:
+        """Test returns sorted column names for single dictionary."""
+        data = [{"name": "John", "age": 30, "city": "New York"}]
+        # sorted alphabetically
+        assert get_column_names(data) == ["age", "city", "name"]
+
+    def test_returns_all_unique_columns_from_multiple_dicts(self) -> None:
+        """Test returns all unique columns from multiple dictionaries."""
+        data = [{"id": 1, "name": "John"}, {"id": 2, "age": 30}, {"name": "Jane", "city": "Boston"}]
+        assert get_column_names(data) == ["age", "city", "id", "name"]
+
+    def test_handles_varying_column_structures(self) -> None:
+        """Test handles dictionaries with completely different column sets."""
+        data = [{"a": 1, "b": 2}, {"c": 3, "d": 4}, {"e": 5}]
+        assert get_column_names(data) == ["a", "b", "c", "d", "e"]
+
+    def test_handles_empty_dictionaries(self) -> None:
+        """Test handles empty dictionaries in the list."""
+        data = [{}, {"name": "John"}, {}, {"age": 30}]
+        assert get_column_names(data) == ["age", "name"]

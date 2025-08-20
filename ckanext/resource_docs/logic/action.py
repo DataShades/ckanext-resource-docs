@@ -115,8 +115,12 @@ def package_show(next: types.Action, context: types.Context, data_dict: types.Da
     if not ExtConfig.append_docs_to_api() or context.get("for_update"):
         return result
 
+    resource_ids = [resource.get("id", "") for resource in result.get("resources", [])]
+    # get all the resources docs at once to avoid multiple DB calls
+    resources_docs = ResourceDocs.get_by_resources_ids(resource_ids)
+
     for resource in result.get("resources", []):
-        if resource_docs := ResourceDocs.get_by_resource_id(resource.get("id", "")):
+        if resource_docs := resources_docs.get(resource.get("id", "")):
             resource[ExtConfig.get_api_field_name()] = resource_docs.docs
 
     return result
