@@ -130,8 +130,8 @@ ckan.module("rdocs-jsoneditor-docs", function ($, _) {
         _overrideResourceDocs: function () {
             let content = window.JSONEditorDOCS.get();
 
-            if (!content.text) {
-                content = {text: {}}
+            if (!content.text && !content.json) {
+                content = {json: {}}
             }
 
             const docs = toJSONContent(content);

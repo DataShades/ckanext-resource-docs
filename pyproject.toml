@@ -1,6 +1,6 @@
 [project]
 name = "ckanext-resource-docs"
-version = "0.4.1"
+version = "0.4.2"
 description = "A CKAN extension that lets you attach a flexible, schema-free data dictionary (“resource documentation”) to any resource, not just Datastore-backed ones."
 readme = "README.md"
 authors = [{ name = "Oleksandr Cherniavskiy", email = "mutantsan@gmail.com" }]
