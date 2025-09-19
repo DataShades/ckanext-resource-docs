@@ -2,6 +2,24 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.4.1] - 2025-08-20
+
+### 🐛 Bug Fixes
+
+- Fix empty docs_prepopulate render
+
+## [0.4.0] - 2025-08-20
+
+### 🚀 Features
+
+- Add IResourceDocs interface, few bug fixes
+
+## [0.3.0] - 2025-08-16
+
+### 🚀 Features
+
+- Add resource docs view
+
 ## [0.2.2] - 2025-08-14
 
 ### 🐛 Bug Fixes

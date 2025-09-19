@@ -24,7 +24,13 @@
     </div>
 
     <label class="form-label">{{ _("Resource Documentation") }}</label>
-    <div id="jsoneditor-docs" data-module="rdocs-jsoneditor-docs" data-module-resource-id="{{ resource.id }}" style="height: 800px" class="rdocs-jsoneditor mb-3"></div>
+    <div
+        id="jsoneditor-docs"
+        data-module="rdocs-jsoneditor-docs"
+        data-module-resource-id="{{ resource.id }}"
+        data-module-docs-prepopulate="{{ docs_prepopulate }}"
+        style="height: 800px" class="rdocs-jsoneditor mb-3">
+    </div>
 
     <div class="form-actions">
         <button type="button" class="btn btn-primary" id="save-docs">
@@ -36,11 +42,14 @@
 {% block scripts %}
     <script src="https://cdnjs.cloudflare.com/ajax/libs/ajv/8.17.1/ajv2020.min.js"></script>
     <script type="module">
-        import { createJSONEditor, createAjvValidator, toJSONContent } from 'https://cdn.jsdelivr.net/npm/vanilla-jsoneditor@3.8.0/standalone.min.js';
-        window.createJSONEditor = createJSONEditor;
-        window.createAjvValidator = createAjvValidator;
-        window.toJSONContent = toJSONContent;
-        window.Ajv2020 = ajv2020;
+     import { createJSONEditor, createAjvValidator, toJSONContent, renderJSONSchemaEnum, renderValue } from 'https://cdn.jsdelivr.net/npm/vanilla-jsoneditor@3.8.0/standalone.min.js';
+
+     window.createJSONEditor = createJSONEditor;
+     window.createAjvValidator = createAjvValidator;
+     window.toJSONContent = toJSONContent;
+     window.Ajv2020 = ajv2020;
+     window.renderJSONSchemaEnum = renderJSONSchemaEnum;
+     window.renderValue = renderValue;
     </script>
 
     {% asset "resource_docs/resource_docs-js" %}
