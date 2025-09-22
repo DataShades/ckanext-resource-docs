@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.4.3] - 2025-09-22
+
+### 🚀 Features
+
+- Pass prepopulated schema alongside with prepopulated data
+
+## [0.4.2] - 2025-08-26
+
+### 🐛 Bug Fixes
+
+- Fix JSON editor parsing
+
 ## [0.4.1] - 2025-08-20
 
 ### 🐛 Bug Fixes
