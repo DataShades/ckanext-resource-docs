@@ -23,9 +23,14 @@ class ResourceDocsEditView(MethodView):
             )
 
             pkg_dict = tk.get_action("package_show")({}, {"id": package_id})
-            resource = tk.get_action("resource_show")({}, {"id": resource_id})
 
         except (tk.ObjectNotFound, tk.NotAuthorized):
+            return tk.abort(404, tk._("Resource not found"))
+
+        resources = {res["id"]: res for res in pkg_dict.get("resources", [])}
+        resource = resources.get(resource_id)
+
+        if not resource:
             return tk.abort(404, tk._("Resource not found"))
 
         try:
