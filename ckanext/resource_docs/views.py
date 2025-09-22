@@ -27,11 +27,8 @@ class ResourceDocsEditView(MethodView):
         except (tk.ObjectNotFound, tk.NotAuthorized):
             return tk.abort(404, tk._("Resource not found"))
 
-        resource = None
-        for res in pkg_dict.get(u'resources', []):
-            if res["id"] == resource_id:
-                resource = res
-                break
+        resources = {res["id"]: res for res in pkg_dict.get("resources", [])}
+        resource = resources.get(resource_id)
 
         if not resource:
             return tk.abort(404, tk._("Resource not found"))
