@@ -8,7 +8,7 @@
 
 {% block resource_additional_information %}
     {% if res and h.show_resource_docs_view() %}
-        {% snippet 'resource_docs/resource_docs_view.html', resource=res %}
+        {% snippet 'resource_docs/resource_docs_view.html', resource=res, pkg=pkg %}
     {% endif %}
 
     {{ super() }}
