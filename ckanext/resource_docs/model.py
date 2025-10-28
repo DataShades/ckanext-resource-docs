@@ -33,8 +33,12 @@ class ResourceDocs(tk.BaseModel):  # type: ignore[call-arg]
     modified_at = Column(DateTime, nullable=False, default=lambda: datetime.now(timezone.utc))  # type: ignore[assignment]
 
     resource = relationship(  # type: ignore
-        Resource,
-        backref=backref("resource_docs", uselist=False),
+            Resource,
+            backref=backref(
+                "resource_docs",
+                uselist=False,
+                passive_deletes=True
+            ),
     )
 
     def __repr__(self):
